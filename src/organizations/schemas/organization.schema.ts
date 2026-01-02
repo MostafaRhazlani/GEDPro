@@ -1,8 +1,21 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { OrganizationStatus } from '../enums/organization.enum';
 import { User } from 'src/users/schemas/user.schema';
+import { HydratedDocument } from 'mongoose';
 
+export type OrganizationDocument = HydratedDocument<Organization>;
+
+@Schema({
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (doc, ret: any) => {
+      delete ret.__v;
+      return ret;
+    },
+  },
+})
 export class Organization {
   @Prop({ required: true })
   name: string;
@@ -15,11 +28,12 @@ export class Organization {
 
   @Prop({
     required: true,
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
   })
-  ownerId: User;
+  ownerId: mongoose.Types.ObjectId | User;
 
-  @Prop({ default: true })
+  @Prop({ default: OrganizationStatus.PENDING, enum: OrganizationStatus })
   status: OrganizationStatus;
 }
 

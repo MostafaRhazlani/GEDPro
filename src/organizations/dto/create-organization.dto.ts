@@ -2,7 +2,6 @@ import {
   IsEmail,
   IsNotEmpty,
   IsString,
-  IsMongoId,
   IsOptional,
   IsEnum,
 } from 'class-validator';
@@ -34,20 +33,13 @@ export class CreateOrganizationDto {
   })
   email: string;
 
-  @IsMongoId()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: '6593f2...',
-    description: 'The ID of the user who owns this organization',
-  })
-  ownerId: string;
-
   @IsOptional()
   @IsEnum(OrganizationStatus)
   @ApiProperty({
     enum: OrganizationStatus,
     default: OrganizationStatus.PENDING,
     description: 'The current status of the organization',
+    required: false,
   })
   status?: OrganizationStatus;
 }

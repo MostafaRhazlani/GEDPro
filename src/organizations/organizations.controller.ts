@@ -46,9 +46,10 @@ export class OrganizationsController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get organization by ID' })
-  findOne(@Param('id') id: string) {
-    return this.organizationsService.findOne(id);
+  @Roles(RoleEnum.HR_ADMIN)
+  @ApiOperation({ summary: 'Get organization by ID (own organization only)' })
+  findOne(@Param('id') id: string, @Request() req: { user: JwtPayload }) {
+    return this.organizationsService.findOne(id, req.user.sub);
   }
 
   @Patch(':id')

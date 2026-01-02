@@ -54,11 +54,7 @@ export class OrganizationsService {
     return organization.save();
   }
 
-  async findAll(): Promise<Organization[]> {
-    return this.organizationModel.find().populate('ownerId').exec();
-  }
-
-  async findOne(id: string): Promise<Organization> {
+  async findOne(id: string, userId: string): Promise<Organization> {
     const organization = await this.organizationModel
       .findById(id)
       .populate('ownerId')
@@ -66,6 +62,11 @@ export class OrganizationsService {
 
     if (!organization) {
       throw new NotFoundException(`Organization with ID ${id} not found`);
+    }
+
+    // Check if the user is the owner of the organization
+    if (organization.ownerId.toString() !== userId) {
+      throw new ForbiddenException('You can only view your own organization');
     }
 
     return organization;

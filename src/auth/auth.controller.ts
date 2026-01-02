@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
+import { LoginDto } from './dtos/login.dto';
 import { Roles } from './decorators/roles.decorator';
 import { Roles as RoleEnum } from 'src/users/enums/user.enum';
 import { AuthGuard } from './guards/auth.guard';
@@ -24,6 +25,12 @@ export class AuthController {
   @Post('register')
   signup(@Body() createUserDto: CreateUserDto) {
     return this.authService.register(createUserDto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('login')
+  signin(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto);
   }
 
   @ApiBearerAuth()

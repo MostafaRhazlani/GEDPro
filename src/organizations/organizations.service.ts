@@ -1,3 +1,4 @@
+import { UpdateStatusDto } from './dto/update-status.dto';
 import {
   Injectable,
   NotFoundException,
@@ -118,6 +119,28 @@ export class OrganizationsService {
     }
 
     Object.assign(organization, updateOrganizationDto);
+    return organization.save();
+  }
+
+  async changeStatus(
+    id: string,
+    userId: string,
+    updateStatusDto: UpdateStatusDto,
+  ): Promise<Organization> {
+    const organization = await this.organizationModel.findById(id).exec();
+
+    if (!organization) {
+      throw new NotFoundException(`Organization with ID ${id} not found`);
+    }
+
+    // Check if the user is the owner of the organization
+    if (organization.ownerId.toString() !== userId) {
+      throw new ForbiddenException(
+        'You can only activate your own organization',
+      );
+    }
+
+    organization.status = updateStatusDto.status;
     return organization.save();
   }
 }

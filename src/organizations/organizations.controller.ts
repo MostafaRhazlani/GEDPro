@@ -17,6 +17,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Roles as RoleEnum } from 'src/users/enums/user.enum';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { JwtPayload } from 'src/auth/interfaces/auth.interface';
+import { UpdateStatusDto } from './dto/update-status.dto';
 
 @ApiTags('organizations')
 @Controller('organization')
@@ -64,6 +65,21 @@ export class OrganizationsController {
       id,
       updateOrganizationDto,
       req.user.sub,
+    );
+  }
+
+  @Patch(':id/change-status')
+  @Roles(RoleEnum.HR_ADMIN)
+  @ApiOperation({ summary: 'Status organization (HR Admin owner only)' })
+  activate(
+    @Param('id') id: string,
+    @Request() req: { user: JwtPayload },
+    @Body() updateStatusDto: UpdateStatusDto,
+  ) {
+    return this.organizationsService.changeStatus(
+      id,
+      req.user.sub,
+      updateStatusDto,
     );
   }
 }
